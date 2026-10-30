@@ -6,6 +6,7 @@
 #include "DBCStores.h"
 #include "Group.h"
 #include "ObjectMgr.h"
+#include "Objects/Bag.h"
 #include "Objects/Item.h"
 #include "Objects/ItemPrototype.h"
 #include "Objects/Player.h"
@@ -41,6 +42,26 @@ struct ptr_master_npcAI : public ScriptedAI
             m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
     }
 };
+
+static Item* FindPlayerItemByEntry(Player* player, uint32 entry)
+{
+    if (!player)
+        return nullptr;
+
+    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+        if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            if (pItem->GetEntry() == entry)
+                return pItem;
+
+    for (int i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+        if (Bag* pBag = (Bag*)player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                if (Item* pItem = pBag->GetItemByPos(j))
+                    if (pItem->GetEntry() == entry)
+                        return pItem;
+
+    return nullptr;
+}
 
 static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
 {
@@ -136,7 +157,7 @@ static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
             if (sPTRConfig.AutoEnchantBiS())
                 enchantId = PTRGearData::GetOptimalEnchant(proto->InventoryType, role);
 
-            Item* existingItem = player->GetItemByEntry(itemId);
+            Item* existingItem = FindPlayerItemByEntry(player, itemId);
             if (existingItem)
             {
                 // If item is in the bag/inventory (not equipped)
