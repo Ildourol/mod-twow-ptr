@@ -6,7 +6,9 @@
 #include "DBCStores.h"
 #include "Group.h"
 #include "ObjectMgr.h"
+#include "Objects/Item.h"
 #include "Objects/ItemPrototype.h"
+#include "Objects/Player.h"
 #include "ScriptedGossip.h"
 #include "Spells/SpellMgr.h"
 
@@ -72,43 +74,116 @@ static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
         }
     }
 
-    // 4. Unequip current gear cleanly
-    for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; ++slot)
-    {
-        player->AutoUnequipItemFromSlot(slot);
-    }
+    // 4. Locate BiS items and weapon proficiencies for the requested role
+    std::list<uint32_t> const* roleItems = nullptr;
+    std::list<uint32_t> const* roleSpells = nullptr;
 
-    // 5. Equip BiS items and learn class weapon proficiencies
     for (auto const& entry : PTRGearData::GetBisItemsAndSpells())
     {
         if (std::get<0>(entry) == role)
         {
-            // Teach weapon proficiencies & abilities
-            for (auto const& spellId : std::get<2>(entry))
-            {
-                if (!player->HasSpell(spellId))
-                    player->LearnSpell(spellId, false);
-            }
+            roleItems = &std::get<1>(entry);
+            roleSpells = &std::get<2>(entry);
+            break;
+        }
+    }
 
-            // Distribute and equip BiS items with optimal PvE permanent enchantments
-            for (auto const& itemId : std::get<1>(entry))
+    if (roleItems && roleSpells)
+    {
+        // Teach weapon proficiencies & abilities
+        for (auto const& spellId : *roleSpells)
+        {
+            if (!player->HasSpell(spellId))
+                player->LearnSpell(spellId, false);
+        }
+
+        // Unequip currently equipped items that do not belong to the selected role
+        for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; ++slot)
+        {
+            if (slot == EQUIPMENT_SLOT_BODY || slot == EQUIPMENT_SLOT_TABARD)
+                continue;
+
+            Item* equippedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+            if (!equippedItem)
+                continue;
+
+            bool belongsToRole = false;
+            for (auto const& roleItemId : *roleItems)
             {
-                if (!player->GetItemCount(itemId))
+                if (roleItemId == equippedItem->GetEntry())
                 {
-                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-                    if (proto)
-                    {
-                        player->SatisfyItemRequirements(proto);
-
-                        uint32 enchantId = 0;
-                        if (sPTRConfig.AutoEnchantBiS())
-                            enchantId = PTRGearData::GetOptimalEnchant(proto->InventoryType, role);
-
-                        player->StoreNewItemInBestSlots(itemId, 1, enchantId);
-                    }
+                    belongsToRole = true;
+                    break;
                 }
             }
-            break;
+
+            if (!belongsToRole)
+            {
+                player->AutoUnequipItemFromSlot(slot);
+            }
+        }
+
+        // Distribute or equip BiS items with optimal PvE permanent enchantments
+        for (auto const& itemId : *roleItems)
+        {
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+            if (!proto)
+                continue;
+
+            player->SatisfyItemRequirements(proto);
+
+            uint32 enchantId = 0;
+            if (sPTRConfig.AutoEnchantBiS())
+                enchantId = PTRGearData::GetOptimalEnchant(proto->InventoryType, role);
+
+            Item* existingItem = player->GetItemByEntry(itemId);
+            if (existingItem)
+            {
+                // If item is in the bag/inventory (not equipped)
+                if (!existingItem->IsEquipped())
+                {
+                    uint16 dest = 0;
+                    InventoryResult msg = player->CanEquipItem(NULL_SLOT, dest, existingItem, false);
+                    if (msg != EQUIP_ERR_OK)
+                        msg = player->CanEquipItem(NULL_SLOT, dest, existingItem, true);
+
+                    if (msg == EQUIP_ERR_OK)
+                    {
+                        uint8 srcBag = existingItem->GetBagSlot();
+                        uint8 srcSlot = existingItem->GetSlot();
+
+                        Item* pDstItem = player->GetItemByPos(dest);
+                        if (!pDstItem)
+                        {
+                            player->RemoveItem(srcBag, srcSlot, true);
+                            player->EquipItem(dest, existingItem, true);
+                            player->AutoUnequipOffhandIfNeed();
+                        }
+                        else
+                        {
+                            player->SwapItem(existingItem->GetPos(), dest);
+                            player->AutoUnequipOffhandIfNeed();
+                        }
+                    }
+                }
+
+                // Ensure optimal PvE enchant is applied
+                if (enchantId && existingItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT) != enchantId)
+                {
+                    if (existingItem->IsEquipped())
+                        player->ApplyEnchantment(existingItem, PERM_ENCHANTMENT_SLOT, false);
+
+                    existingItem->ClearEnchantment(PERM_ENCHANTMENT_SLOT);
+                    existingItem->SetEnchantment(PERM_ENCHANTMENT_SLOT, enchantId, 0, 0);
+
+                    if (existingItem->IsEquipped())
+                        player->ApplyEnchantment(existingItem, PERM_ENCHANTMENT_SLOT, true);
+                }
+            }
+            else
+            {
+                player->StoreNewItemInBestSlots(itemId, 1, enchantId);
+            }
         }
     }
 
