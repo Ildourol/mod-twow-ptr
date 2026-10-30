@@ -1,0 +1,52 @@
+[ModuleConf]
+#
+# Turtle WoW Custom vMaNGOS - mod-twow-ptr configuration
+#
+
+# Enables or disables the entire PTR Master module.
+# Default: 1 (Enabled)
+PTR.Enable = 1
+
+# If enabled, only characters with Game Master status (gmlevel >= 1) can access PTR NPC gossip.
+# Default: 0 (Available to all players on PTR)
+PTR.GMOnly = 0
+
+# Amount of copper given to boosted characters (10000000 copper = 1000 gold).
+# Default: 10000000
+PTR.GoldAmount = 10000000
+
+# Automatically equip 4x 16-slot Traveler's Backpacks (3 + Quiver for Hunters).
+# Default: 1 (Enabled)
+PTR.GiveBags = 1
+
+# Automatically update weapon, defense, and class skills to 300 upon gearing.
+# Default: 1 (Enabled)
+PTR.MaxSkills = 1
+
+# Automatically teach all class spells up to max rank.
+# Default: 1 (Enabled)
+PTR.TeachClassSpells = 1
+
+# Automatically apply optimal PvE enchantments to equipped BiS items.
+# Default: 1 (Enabled)
+PTR.AutoEnchantBiS = 1
+
+# Grant key raid attunements (MC, BWL, Onyxia, Naxxramas, Karazhan, Scarlet Citadel).
+# Default: 1 (Enabled)
+PTR.GrantAttunements = 1
+
+# Grant Exalted reputation with raid factions (Argent Dawn, Hydraxian Waterlords, Brood of Nozdormu, Zandalar Tribe).
+# Default: 1 (Enabled)
+PTR.MaxRaidReputations = 1
+
+# Require a full raid group (10/40 members) to teleport to raid boss locations.
+# Default: 0 (Allow solo developers/testers to teleport)
+PTR.RaidTeleport.RequireFullGroup = 0
+
+# Enable the Boss Dummy Loot Helper system (.loothelper command and NPC 1001000).
+# Default: 1 (Enabled)
+PTR.LootHelper.Enabled = 1
+
+# Require GM privileges to use the .loothelper command and summon dummy helpers.
+# Default: 1 (GM Only)
+PTR.LootHelper.GMOnly = 1
