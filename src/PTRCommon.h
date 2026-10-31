@@ -50,6 +50,18 @@ static constexpr uint32_t ITEM_BAG            = 4500;  // Traveler's Backpack (1
 static constexpr uint32_t ITEM_HUNTER_QUIVER  = 19319; // Harpy Hide Quiver (16 slot, 15% haste)
 static constexpr uint32_t SPELL_BOOST_VISUAL  = 24240; // Visual boost effect
 
+// Riding Skills and Spells
+static constexpr uint32_t SKILL_RIDING_ID             = 762;
+static constexpr uint16_t SKILL_RIDING_MAX_VAL        = 150;
+static constexpr uint32_t SPELL_APPRENTICE_RIDING     = 33388;
+static constexpr uint32_t SPELL_JOURNEYMAN_RIDING     = 33391;
+
+// Class Mount Spells
+static constexpr uint32_t SPELL_PALADIN_WARHORSE      = 13819;
+static constexpr uint32_t SPELL_PALADIN_CHARGER       = 23214;
+static constexpr uint32_t SPELL_WARLOCK_FELSTEED      = 5784;
+static constexpr uint32_t SPELL_WARLOCK_DREADSTEED    = 23161;
+
 // Gossip Text entries
 static constexpr uint32_t TEXT_PTR_MASTER_GREETING = 1000100;
 static constexpr uint32_t TEXT_PTR_LOOT_HELPER     = 1001000;
@@ -63,6 +75,7 @@ enum PTRGossipActions : uint32_t
     ACTION_ATTUNEMENTS      = 5004,
     ACTION_ENCHANT_GEAR     = 5005,
     ACTION_TELEPORT_MENU    = 5006,
+    ACTION_MAX_RIDING       = 5007,
     ACTION_TELEPORT_DEST_0  = 5100, // Mariella / Scarlet Citadel
     ACTION_TELEPORT_DEST_1  = 5101, // Naxxramas Entrance
     ACTION_TELEPORT_DEST_2  = 5102, // Temple of Ahn'Qiraj (AQ40)

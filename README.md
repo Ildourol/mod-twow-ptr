@@ -18,6 +18,8 @@ A complete developer and PTR raid testing automation suite for the **Turtle WoW 
 * **Skills & Dynamic Spell Discovery**:
   - Maxes out all weapon skills, defense, and class skills to 300/300.
   - Automatically queries the engine DBC and teaches all class spells and weapon proficiencies.
+  - Automatically teaches and maxes out Riding skills to the maximum (Journeyman Riding 150/150 rank, Apprentice Riding 75, racial mount proficiencies, and Paladin/Warlock class mounts).
+  - Standalone gossip option on PTR Master NPC to learn maximum riding skills at any time.
 * **1,000 Gold & 16-Slot Bags**:
   - Spawns 1,000 gold and four 16-slot Traveler's Backpacks (3 + Harpy Hide Quiver for Hunters).
 * **Instant Raid World Buff Dispenser**:
@@ -61,6 +63,8 @@ A complete developer and PTR raid testing automation suite for the **Turtle WoW 
 | `PTR.GoldAmount` | `10000000` | Copper amount given on boost (10000000 copper = 1000 gold). |
 | `PTR.GiveBags` | `1` | Automatically equips four 16-slot bags (or 3 bags + quiver for hunters). |
 | `PTR.MaxSkills` | `1` | Updates weapon skills, defense, and class skills to 300. |
+| `PTR.MaxRidingSkills` | `1` | Automatically teaches and maxes out Riding skills (Journeyman Riding 150/150 and mount proficiencies). |
+| `PTR.GiveMountItem` | `0` | If `1`, stores a race-appropriate epic mount item in player bags upon gearing. |
 | `PTR.TeachClassSpells` | `1` | Automatically learns all class spells up to max rank. |
 | `PTR.AutoEnchantBiS` | `1` | Automatically enchants equipped BiS items with optimal PvE enchantments. |
 | `PTR.GrantAttunements` | `1` | Grants key raid attunements (MC, BWL, Onyxia, Naxxramas). |

@@ -23,6 +23,14 @@ PTR.GiveBags = 1
 # Default: 1 (Enabled)
 PTR.MaxSkills = 1
 
+# Automatically teach and max out riding skills (Journeyman Riding 150/150 and mount proficiencies) upon gearing.
+# Default: 1 (Enabled)
+PTR.MaxRidingSkills = 1
+
+# Automatically place a race-appropriate epic mount item into inventory upon gearing.
+# Default: 0 (Disabled - riding skills and gold are provided; purchase or use existing mounts)
+PTR.GiveMountItem = 1
+
 # Automatically teach all class spells up to max rank.
 # Default: 1 (Enabled)
 PTR.TeachClassSpells = 1

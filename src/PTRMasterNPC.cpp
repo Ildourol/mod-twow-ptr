@@ -63,6 +63,60 @@ static Item* FindPlayerItemByEntry(Player* player, uint32 entry)
     return nullptr;
 }
 
+static void MaximizeRidingSkills(Player* player)
+{
+    if (!player)
+        return;
+
+    // 1. Learn Journeyman Riding (33391) and Apprentice Riding (33388)
+    if (!player->HasSpell(SPELL_JOURNEYMAN_RIDING))
+        player->LearnSpell(SPELL_JOURNEYMAN_RIDING, false);
+    if (!player->HasSpell(SPELL_APPRENTICE_RIDING))
+        player->LearnSpell(SPELL_APPRENTICE_RIDING, false);
+
+    // 2. Set unified Riding skill (SKILL_RIDING = 762) to maximum (150/150, step 2)
+    player->SetSkill(SKILL_RIDING, SKILL_RIDING_MAX_VAL, SKILL_RIDING_MAX_VAL, 2);
+
+    // 3. Learn all racial riding spells and skills for universal mount compatibility
+    static const struct RacialRidingInfo
+    {
+        uint32 spellId;
+        uint16 skillId;
+    } racialRiding[] = {
+        { 824,   SKILL_RIDING_HORSE },          // Horse Riding (Human)
+        { 825,   SKILL_RIDING_WOLF },           // Wolf Riding (Orc)
+        { 826,   SKILL_RIDING_RAM },            // Ram Riding (Dwarf)
+        { 828,   SKILL_RIDING_TIGER },          // Tiger Riding (Night Elf)
+        { 10861, SKILL_RIDING_RAPTOR },         // Raptor Riding (Troll)
+        { 10906, SKILL_RIDING_UNDEAD_HORSE },   // Undead Horsemanship (Undead)
+        { 10907, SKILL_RIDING_MECHANOSTRIDER }, // Mechanostrider Piloting (Gnome)
+        { 18995, SKILL_RIDING_KODO }            // Kodo Riding (Tauren)
+    };
+
+    for (auto const& rr : racialRiding)
+    {
+        if (!player->HasSpell(rr.spellId))
+            player->LearnSpell(rr.spellId, false);
+        player->SetSkill(rr.skillId, SKILL_RIDING_MAX_VAL, SKILL_RIDING_MAX_VAL);
+    }
+
+    // 4. Teach Paladin / Warlock class mount spells
+    if (player->GetClass() == CLASS_PALADIN)
+    {
+        if (!player->HasSpell(SPELL_PALADIN_WARHORSE))
+            player->LearnSpell(SPELL_PALADIN_WARHORSE, false);
+        if (!player->HasSpell(SPELL_PALADIN_CHARGER))
+            player->LearnSpell(SPELL_PALADIN_CHARGER, false);
+    }
+    else if (player->GetClass() == CLASS_WARLOCK)
+    {
+        if (!player->HasSpell(SPELL_WARLOCK_FELSTEED))
+            player->LearnSpell(SPELL_WARLOCK_FELSTEED, false);
+        if (!player->HasSpell(SPELL_WARLOCK_DREADSTEED))
+            player->LearnSpell(SPELL_WARLOCK_DREADSTEED, false);
+    }
+}
+
 static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
 {
     if (!player)
@@ -257,7 +311,38 @@ static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
         player->UpdateSkillsToMaxSkillsForLevel();
     }
 
-    // 8. Restore health, powers and visual fanfare
+    // 8. Max out Riding skills to maximum (Journeyman 150/150 and mount proficiencies)
+    if (sPTRConfig.MaxRidingSkills())
+    {
+        MaximizeRidingSkills(player);
+    }
+
+    // 9. Optional: Provision race-appropriate epic mount item
+    if (sPTRConfig.GiveMountItem())
+    {
+        uint32 mountEntry = 0;
+        switch (player->GetRace())
+        {
+            case RACE_HUMAN:    mountEntry = 18776; break; // Armored Golden Steed
+            case RACE_ORC:      mountEntry = 18796; break; // Armored Brown Wolf
+            case RACE_DWARF:    mountEntry = 18785; break; // Armored White Ram
+            case RACE_NIGHTELF: mountEntry = 18766; break; // Armored Frostsaber
+            case RACE_UNDEAD:   mountEntry = 13334; break; // Armored Green Deathcharger
+            case RACE_TAUREN:   mountEntry = 18793; break; // Armored White Kodo
+            case RACE_GNOME:    mountEntry = 18772; break; // Armored Green Mechanostrider
+            case RACE_TROLL:    mountEntry = 18788; break; // Armored Blue Raptor
+            case RACE_HIGH_ELF: mountEntry = 80457; break; // Armored Thalassian Unicorn
+            case RACE_GOBLIN:   mountEntry = 18796; break; // Armored Brown Wolf
+            default:            mountEntry = 18776; break;
+        }
+
+        if (mountEntry && !FindPlayerItemByEntry(player, mountEntry))
+        {
+            player->StoreNewItemInBestSlots(mountEntry, 1);
+        }
+    }
+
+    // 10. Restore health, powers and visual fanfare
     player->SetHealth(player->GetMaxHealth());
     for (int p = 0; p < MAX_POWERS; ++p)
     {
@@ -269,7 +354,7 @@ static void ApplyPTRBoostAndGear(Player* player, ClassesAndRoles const role)
 
     if (player->GetSession() && !player->GetSession()->IsHeadless())
     {
-        ChatHandler(player).PSendSysMessage("|cff00ff00[PTR Master]|r Full Best-in-Slot raid package, spells, and maximum skills equipped!");
+        ChatHandler(player).PSendSysMessage("|cff00ff00[PTR Master]|r Full Best-in-Slot raid package, spells, riding skills, and maximum skills equipped!");
     }
 }
 
@@ -394,6 +479,7 @@ bool ptr_master_npc::OnGossipHello(Player* player, Creature* creature)
     ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Reset talents (Free respec)", GOSSIP_SENDER_MAIN, ACTION_RESET_TALENTS);
     ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Attune me to all raids & maximize reputations", GOSSIP_SENDER_MAIN, ACTION_ATTUNEMENTS);
     ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Enchant all my equipped gear", GOSSIP_SENDER_MAIN, ACTION_ENCHANT_GEAR);
+    ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Teach maximum Riding skills (Journeyman 150)", GOSSIP_SENDER_MAIN, ACTION_MAX_RIDING);
     ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Teleport to Raid Boss Encounters...", GOSSIP_SENDER_MAIN, ACTION_TELEPORT_MENU);
 
     SEND_GOSSIP_MENU(TEXT_PTR_MASTER_GREETING, creature->GetGUID());
@@ -503,7 +589,16 @@ bool ptr_master_npc::OnGossipSelect(Player* player, Creature* creature, uint32 /
         return true;
     }
 
-    // 7. Teleportation
+    // 7. Max Riding Skill (Standalone Option)
+    if (action == ACTION_MAX_RIDING)
+    {
+        MaximizeRidingSkills(player);
+        if (player->GetSession() && !player->GetSession()->IsHeadless())
+            ChatHandler(player).PSendSysMessage("|cff00ff00[PTR Master]|r Maximum Riding skill (Journeyman 150/150) and mount proficiencies learned!");
+        return true;
+    }
+
+    // 8. Teleportation
     if (action >= ACTION_TELEPORT_DEST_0 && action <= ACTION_TELEPORT_DEST_7)
     {
         uint32 const destIndex = action - ACTION_TELEPORT_DEST_0;

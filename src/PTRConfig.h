@@ -15,6 +15,8 @@ public:
     uint32_t GetGoldAmount() const { return m_goldAmount; }
     bool GiveBags() const { return m_giveBags; }
     bool MaxSkills() const { return m_maxSkills; }
+    bool MaxRidingSkills() const { return m_maxRidingSkills; }
+    bool GiveMountItem() const { return m_giveMountItem; }
     bool TeachClassSpells() const { return m_teachClassSpells; }
     bool AutoEnchantBiS() const { return m_autoEnchantBiS; }
     bool GrantAttunements() const { return m_grantAttunements; }
@@ -31,6 +33,8 @@ private:
     uint32_t m_goldAmount{ 10000000 };
     bool m_giveBags{ true };
     bool m_maxSkills{ true };
+    bool m_maxRidingSkills{ true };
+    bool m_giveMountItem{ false };
     bool m_teachClassSpells{ true };
     bool m_autoEnchantBiS{ true };
     bool m_grantAttunements{ true };
