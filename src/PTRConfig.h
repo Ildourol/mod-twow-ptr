@@ -34,7 +34,7 @@ private:
     bool m_giveBags{ true };
     bool m_maxSkills{ true };
     bool m_maxRidingSkills{ true };
-    bool m_giveMountItem{ false };
+    bool m_giveMountItem{ true };
     bool m_teachClassSpells{ true };
     bool m_autoEnchantBiS{ true };
     bool m_grantAttunements{ true };

@@ -64,7 +64,7 @@ A complete developer and PTR raid testing automation suite for the **Turtle WoW 
 | `PTR.GiveBags` | `1` | Automatically equips four 16-slot bags (or 3 bags + quiver for hunters). |
 | `PTR.MaxSkills` | `1` | Updates weapon skills, defense, and class skills to 300. |
 | `PTR.MaxRidingSkills` | `1` | Automatically teaches and maxes out Riding skills (Journeyman Riding 150/150 and mount proficiencies). |
-| `PTR.GiveMountItem` | `0` | If `1`, stores a race-appropriate epic mount item in player bags upon gearing. |
+| `PTR.GiveMountItem` | `1` | Automatically stores a race-appropriate epic mount item in player bags upon gearing. |
 | `PTR.TeachClassSpells` | `1` | Automatically learns all class spells up to max rank. |
 | `PTR.AutoEnchantBiS` | `1` | Automatically enchants equipped BiS items with optimal PvE enchantments. |
 | `PTR.GrantAttunements` | `1` | Grants key raid attunements (MC, BWL, Onyxia, Naxxramas). |

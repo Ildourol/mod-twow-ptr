@@ -16,7 +16,7 @@ void PTRConfig::Load()
     m_giveBags             = sConfig.GetBoolDefault("PTR.GiveBags", true);
     m_maxSkills            = sConfig.GetBoolDefault("PTR.MaxSkills", true);
     m_maxRidingSkills      = sConfig.GetBoolDefault("PTR.MaxRidingSkills", true);
-    m_giveMountItem        = sConfig.GetBoolDefault("PTR.GiveMountItem", false);
+    m_giveMountItem        = sConfig.GetBoolDefault("PTR.GiveMountItem", true);
     m_teachClassSpells     = sConfig.GetBoolDefault("PTR.TeachClassSpells", true);
     m_autoEnchantBiS       = sConfig.GetBoolDefault("PTR.AutoEnchantBiS", true);
     m_grantAttunements     = sConfig.GetBoolDefault("PTR.GrantAttunements", true);

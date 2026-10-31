@@ -28,7 +28,7 @@ PTR.MaxSkills = 1
 PTR.MaxRidingSkills = 1
 
 # Automatically place a race-appropriate epic mount item into inventory upon gearing.
-# Default: 0 (Disabled - riding skills and gold are provided; purchase or use existing mounts)
+# Default: 1 (Enabled)
 PTR.GiveMountItem = 1
 
 # Automatically teach all class spells up to max rank.
