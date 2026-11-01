@@ -570,7 +570,7 @@ bool ptr_master_npc::OnGossipSelect(Player* player, Creature* creature, uint32 /
             static const uint32 raidFactions[] = { 529, 749, 910, 270 }; // Argent Dawn, Hydraxian, Brood of Nozdormu, Zandalar
             for (uint32 fId : raidFactions)
             {
-                if (FactionEntry const* fEntry = sFactionStore.LookupEntry(fId))
+                if (FactionEntry const* fEntry = sObjectMgr.GetFactionEntry(fId))
                 {
                     player->GetReputationMgr().SetReputation(fEntry, 42000);
                 }
