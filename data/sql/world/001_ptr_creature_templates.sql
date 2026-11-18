@@ -17,7 +17,7 @@ VALUES
    1, 7, 1.0, 1.14, 1.0, 1000, 3700,
    5000, 7000, 0, 3, 1, '', 'ptr_master_npc');
 
--- 2. PTR Consumables Vendor: Turtle
+-- 2. PTR Consumables Vendor: Turtle (npc_flags = 4: UNIT_NPC_FLAG_VENDOR)
 DELETE FROM `creature_template` WHERE `entry` = 2000101;
 INSERT INTO `creature_template`
   (`entry`, `name`, `subname`, `display_id1`, `faction`, `npc_flags`, `gossip_menu_id`,
@@ -25,7 +25,7 @@ INSERT INTO `creature_template`
    `unit_class`, `type`, `speed_walk`, `speed_run`, `scale`, `base_attack_time`, `ranged_attack_time`,
    `dmg_min`, `dmg_max`, `movement_type`, `inhabit_type`, `regeneration`, `ai_name`, `script_name`)
 VALUES
-  (2000101, 'Turtle', 'PTR Consumables Vendor', 16259, 35, 128, 0,
+  (2000101, 'Turtle', 'PTR Consumables Vendor', 16259, 35, 4, 0,
    60, 60, 700000, 700000, 5000000, 5000000, 4500,
    1, 7, 1.0, 1.14, 0.25, 1000, 3700,
    5000, 7000, 0, 3, 1, '', 'ptr_vendor_npc');
